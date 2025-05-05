@@ -6,7 +6,7 @@ import type { Task } from "@/types/task";
 import useLocalStorage from "@/hooks/use-local-storage";
 import { AddTaskForm } from "@/components/add-task-form";
 import { TaskList } from "@/components/task-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"; // Import CardFooter
 import { CheckSquare, Star, Info, Trash2, AlertTriangle } from 'lucide-react'; // Import icons
 import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns functions
 import { useToast } from "@/hooks/use-toast"; // Import useToast
@@ -124,11 +124,11 @@ export default function Home() {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
 
-  const clearAllTasks = () => {
-    setTasks([]);
+  const clearCompletedTasks = () => {
+    setTasks((prevTasks) => prevTasks.filter((task) => !task.completed));
     toast({
-        title: "Tasks Cleared",
-        description: "All tasks have been removed.",
+        title: "Completed Tasks Cleared",
+        description: "All completed tasks have been removed.",
         variant: "default",
     });
   };
@@ -143,7 +143,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 lg:p-24 bg-background">
-      <Card className="w-full max-w-2xl shadow-xl rounded-lg overflow-hidden">
+      <Card className="w-full max-w-2xl shadow-xl rounded-lg overflow-hidden flex flex-col"> {/* Added flex flex-col */}
         <CardHeader className="bg-primary text-primary-foreground p-6 flex flex-row items-start sm:items-center justify-between">
            <div className="flex flex-col flex-grow"> {/* Allow title/info to take space */}
             <div className="flex items-center space-x-3">
@@ -164,44 +164,8 @@ export default function Home() {
             <ThemeToggle /> {/* Add the ThemeToggle component */}
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-6 flex-grow"> {/* Added flex-grow */}
           <AddTaskForm onAddTask={addTask} />
-
-          {/* Clear All Button with Confirmation */}
-          {isClient && tasks.length > 0 && (
-             <div className="flex justify-end mb-4 -mt-2">
-               <AlertDialog>
-                 <AlertDialogTrigger asChild>
-                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/50">
-                     <Trash2 className="h-4 w-4 mr-1" />
-                     Clear All Tasks
-                   </Button>
-                 </AlertDialogTrigger>
-                 <AlertDialogContent>
-                   <AlertDialogHeader>
-                     <AlertDialogTitle className="flex items-center">
-                       <AlertTriangle className="h-5 w-5 mr-2 text-destructive" /> Are you absolutely sure?
-                     </AlertDialogTitle>
-                     <AlertDialogDescription>
-                       This action cannot be undone. This will permanently delete all your tasks ({tasks.length} total).
-                     </AlertDialogDescription>
-                   </AlertDialogHeader>
-                   <AlertDialogFooter>
-                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                     <AlertDialogAction
-                        onClick={clearAllTasks}
-                        className={
-                          'bg-destructive text-destructive-foreground hover:bg-destructive/90'
-                        }
-                      >
-                       Yes, clear all tasks
-                     </AlertDialogAction>
-                   </AlertDialogFooter>
-                 </AlertDialogContent>
-               </AlertDialog>
-             </div>
-          )}
-
 
           <div className="space-y-6">
             {/* Incomplete Tasks Section */}
@@ -241,6 +205,41 @@ export default function Home() {
              )}
           </div>
         </CardContent>
+
+        {/* Clear Completed Button with Confirmation */}
+        {isClient && completedTasks.length > 0 && (
+           <CardFooter className="p-6 border-t border-border justify-end"> {/* Moved button to CardFooter */}
+             <AlertDialog>
+               <AlertDialogTrigger asChild>
+                 <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/50">
+                   <Trash2 className="h-4 w-4 mr-1" />
+                   Clear Completed ({completedTasks.length})
+                 </Button>
+               </AlertDialogTrigger>
+               <AlertDialogContent>
+                 <AlertDialogHeader>
+                   <AlertDialogTitle className="flex items-center">
+                     <AlertTriangle className="h-5 w-5 mr-2 text-destructive" /> Are you sure?
+                   </AlertDialogTitle>
+                   <AlertDialogDescription>
+                     This action cannot be undone. This will permanently delete all your completed tasks ({completedTasks.length} total). Incomplete tasks will remain.
+                   </AlertDialogDescription>
+                 </AlertDialogHeader>
+                 <AlertDialogFooter>
+                   <AlertDialogCancel>Cancel</AlertDialogCancel>
+                   <AlertDialogAction
+                      onClick={clearCompletedTasks} // Use the new function
+                      className={
+                        'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                      }
+                    >
+                     Yes, clear completed tasks
+                   </AlertDialogAction>
+                 </AlertDialogFooter>
+               </AlertDialogContent>
+             </AlertDialog>
+           </CardFooter>
+        )}
       </Card>
     </main>
   );
