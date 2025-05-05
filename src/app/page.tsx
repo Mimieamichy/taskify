@@ -149,7 +149,7 @@ export default function Home() {
            <div className="flex flex-col flex-grow"> {/* Allow title/info to take space */}
             <div className="flex items-center space-x-3">
               <CheckSquare className="h-8 w-8" />
-              <CardTitle className="text-2xl font-bold">TaskTango</CardTitle>
+              <CardTitle className="text-2xl font-bold">Taskify</CardTitle>
             </div>
              <div className="flex items-center space-x-1 mt-1.5 text-xs text-primary-foreground/80 ml-11"> {/* Info message */}
                 <Info className="h-3 w-3" />

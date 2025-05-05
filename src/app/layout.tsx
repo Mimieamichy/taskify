@@ -12,7 +12,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: 'TaskTango', // Updated App Name
+  title: 'Taskify', // Updated App Name
   description: 'Your simple and stylish Todo App', // Updated description
 };
 

@@ -20,7 +20,7 @@ body {
     --secondary-foreground: 210 10% 23%; /* Dark Gray */
     --muted: 210 16% 93%; /* Slightly darker gray */
     --muted-foreground: 210 8% 45%; /* Lighter gray text */
-    --accent: 145 63% 49%; /* Green (#2ecc71) */
+    --accent: 204 70% 53% /* Green (#3498db) */
     --accent-foreground: 145 63% 98%; /* Light color on green */
     --destructive: 0 84.2% 60.2%; /* Default Red */
     --destructive-foreground: 0 0% 98%; /* Default Light */
@@ -57,7 +57,7 @@ body {
     --secondary-foreground: 0 0% 98%; /* Light Text */
     --muted: 210 10% 25%; /* Slightly Lighter Dark Gray */
     --muted-foreground: 0 0% 63.9%; /* Lighter gray text */
-    --accent: 145 63% 49%; /* Green (#2ecc71) */
+    --accent: 204 70% 53%; /* Green (#3498db) */
     --accent-foreground: 145 63% 5%; /* Dark text on green */
     --destructive: 0 62.8% 30.6%; /* Darker Red */
     --destructive-foreground: 0 0% 98%; /* Light Text */
