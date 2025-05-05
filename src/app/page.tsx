@@ -48,7 +48,7 @@ export default function Home() {
             if (!isNaN(hours) && !isNaN(minutes)) {
                 dueDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0);
             } else {
-                 console.warn("Invalid time format received:", time);
+                 // console.warn("Invalid time format received:", time); // Removed console.warn
             }
         } catch (e) {
             console.error("Error parsing time:", e);
@@ -89,18 +89,18 @@ export default function Home() {
              if (sameDay && now <= new Date(task.dueDate.getTime() + ON_TIME_TOLERANCE_MINUTES * 60000)) {
               pointsEarned += BONUS_POINTS_ON_TIME;
               awardedBonus = true; // Set flag
-               console.log(`Task ${task.id}: Awarding ${BONUS_POINTS_ON_TIME} points! Completed within tolerance.`);
+               // console.log(`Task ${task.id}: Awarding ${BONUS_POINTS_ON_TIME} points! Completed within tolerance.`); // Removed console.log
             } else {
-                 console.log(`Task ${task.id}: Not completed within time tolerance.`);
+                 // console.log(`Task ${task.id}: Not completed within time tolerance.`); // Removed console.log
             }
           } else if(isNowCompleting && !task.dueDate) {
-             console.log(`Task ${task.id} has no due date, cannot award points.`);
+             // console.log(`Task ${task.id} has no due date, cannot award points.`); // Removed console.log
           } else if (isNowCompleting && task.points && task.points > 0) {
-              console.log(`Task ${task.id} already has points.`);
+              // console.log(`Task ${task.id} already has points.`); // Removed console.log
           } else if (!isNowCompleting) {
               // Optional: Decide if un-completing should remove points. Currently, it doesn't.
               // pointsEarned = 0; // Uncomment to remove points on un-completion
-               console.log(`Task ${task.id}: Marked as incomplete.`);
+               // console.log(`Task ${task.id}: Marked as incomplete.`); // Removed console.log
           }
 
           // Show toast only if a bonus was just awarded
@@ -108,7 +108,7 @@ export default function Home() {
              toast({
                 title: "Well Done!",
                 description: `Task completed on time! +${BONUS_POINTS_ON_TIME} bonus point.`,
-                variant: "default", // Use default or specify another variant like 'success' if defined
+                variant: "default", // Use default variant (can be styled further)
              });
           }
 
@@ -157,7 +157,7 @@ export default function Home() {
           </div>
           <div className="flex items-center space-x-2 flex-shrink-0"> {/* Group points and theme toggle */}
              <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
-                <Star className="h-5 w-5 text-yellow-300" />
+                <Star className="h-5 w-5 text-warning" /> {/* Updated color */}
                 <span className="font-semibold text-lg">{totalPoints}</span>
                 <span className="text-sm hidden sm:inline">Bonus Points</span>
             </div>

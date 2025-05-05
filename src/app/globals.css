@@ -20,10 +20,12 @@ body {
     --secondary-foreground: 210 10% 23%; /* Dark Gray */
     --muted: 210 16% 93%; /* Slightly darker gray */
     --muted-foreground: 210 8% 45%; /* Lighter gray text */
-    --accent: 210 65% 55%; /* New Blue */
-    --accent-foreground: 210 40% 98%; /* Light color on new blue */
+    --accent: 145 63% 49%; /* Green (#2ecc71) */
+    --accent-foreground: 145 63% 98%; /* Light color on green */
     --destructive: 0 84.2% 60.2%; /* Default Red */
     --destructive-foreground: 0 0% 98%; /* Default Light */
+    --warning: 45 93% 47%; /* Yellow for points/warnings */
+    --warning-foreground: 45 93% 98%; /* Light text for warning */
     --border: 210 15% 88%; /* Subtle border color */
     --input: 210 15% 88%; /* Subtle input border */
     --ring: 204 70% 53%; /* Calm Blue for focus rings */
@@ -37,8 +39,8 @@ body {
     --sidebar-foreground: 210 10% 23%; /* Dark Gray */
     --sidebar-primary: 204 70% 53%; /* Calm Blue */
     --sidebar-primary-foreground: 210 40% 98%; /* Light color */
-    --sidebar-accent: 210 65% 55%; /* New Blue */
-    --sidebar-accent-foreground: 210 40% 98%; /* Light color */
+    --sidebar-accent: 145 63% 49%; /* Green */
+    --sidebar-accent-foreground: 145 63% 98%; /* Light color */
     --sidebar-border: 210 15% 88%; /* Subtle border */
     --sidebar-ring: 204 70% 53%; /* Calm Blue */
   }
@@ -55,10 +57,12 @@ body {
     --secondary-foreground: 0 0% 98%; /* Light Text */
     --muted: 210 10% 25%; /* Slightly Lighter Dark Gray */
     --muted-foreground: 0 0% 63.9%; /* Lighter gray text */
-    --accent: 210 65% 55%; /* New Blue */
-    --accent-foreground: 0 0% 98%; /* Light Text on new blue */
+    --accent: 145 63% 49%; /* Green (#2ecc71) */
+    --accent-foreground: 145 63% 5%; /* Dark text on green */
     --destructive: 0 62.8% 30.6%; /* Darker Red */
     --destructive-foreground: 0 0% 98%; /* Light Text */
+    --warning: 45 93% 55%; /* Slightly brighter yellow */
+    --warning-foreground: 45 93% 5%; /* Dark text for warning */
     --border: 210 10% 30%; /* Subtle dark border */
     --input: 210 10% 30%; /* Subtle dark input border */
     --ring: 204 70% 53%; /* Calm Blue for focus rings */
@@ -71,8 +75,8 @@ body {
     --sidebar-foreground: 0 0% 98%; /* Light Text */
     --sidebar-primary: 204 70% 53%; /* Calm Blue */
     --sidebar-primary-foreground: 210 10% 15%; /* Dark text */
-    --sidebar-accent: 210 65% 55%; /* New Blue */
-    --sidebar-accent-foreground: 0 0% 98%; /* Light text */
+    --sidebar-accent: 145 63% 49%; /* Green */
+    --sidebar-accent-foreground: 145 63% 5%; /* Dark text */
     --sidebar-border: 210 10% 30%; /* Subtle dark border */
     --sidebar-ring: 204 70% 53%; /* Calm Blue */
   }
@@ -86,4 +90,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-

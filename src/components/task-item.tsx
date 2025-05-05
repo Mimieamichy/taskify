@@ -48,8 +48,8 @@ export function TaskItem({ task, onToggleComplete, onDelete }: TaskItemProps) {
       </div>
       <div className="flex items-center space-x-2 flex-shrink-0 ml-2"> {/* Prevent controls shrinking */}
         {task.points && task.points > 0 && (
-            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-            <Star className="h-3 w-3 mr-1 text-yellow-500" /> +{task.points}
+            <Badge variant="warning" > {/* Use warning variant */}
+            <Star className="h-3 w-3 mr-1 text-warning-foreground" /> +{task.points} {/* Use warning-foreground */}
           </Badge>
         )}
         <Button
