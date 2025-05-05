@@ -7,15 +7,17 @@ import { AddTaskForm } from "@/components/add-task-form";
 import { TaskList } from "@/components/task-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckSquare, Star } from 'lucide-react';
-import { differenceInMinutes, isSameDay, parse } from 'date-fns'; // Import date-fns functions
+import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns functions
+import { useToast } from "@/hooks/use-toast"; // Import useToast
 
 const BONUS_POINTS_ON_TIME = 1;
-const ON_TIME_TOLERANCE_MINUTES = 15;
+const ON_TIME_TOLERANCE_MINUTES = 15; // Allow 15 minutes buffer
 
 export default function Home() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("tasks", []);
   // Hydration safety: Ensure tasks are only rendered client-side after loading from localStorage
   const [isClient, setIsClient] = useState(false);
+  const { toast } = useToast(); // Get toast function
 
   useEffect(() => {
     setIsClient(true);
@@ -58,22 +60,21 @@ export default function Home() {
           const wasCompleted = task.completed;
           const isNowCompleting = !wasCompleted;
           let pointsEarned = task.points || 0;
+          let awardedBonus = false; // Flag to check if bonus was awarded in this toggle
 
           // Award points only when marking as complete (not when un-marking)
           // and only if points haven't already been awarded for this task
           if (isNowCompleting && task.dueDate && (task.points === 0 || task.points === undefined)) {
+            // Calculate difference only if dueDate is valid
             const diffMinutes = Math.abs(differenceInMinutes(now, task.dueDate));
             const sameDay = isSameDay(now, task.dueDate);
 
-            console.log(`Task ${task.id} completion check:`);
-            console.log(`  Now: ${now}`);
-            console.log(`  Due: ${task.dueDate}`);
-            console.log(`  Diff (mins): ${diffMinutes}`);
-            console.log(`  Same Day: ${sameDay}`);
-
-
+            // Check if completion is on the same day and within the tolerance window *before* the due time
+            // or exactly at the due time, or within tolerance *after* the due time.
+            // Essentially, check if `now` is within [dueDate - tolerance, dueDate + tolerance]
             if (sameDay && diffMinutes <= ON_TIME_TOLERANCE_MINUTES) {
               pointsEarned += BONUS_POINTS_ON_TIME;
+              awardedBonus = true; // Set flag
                console.log(`  Awarding ${BONUS_POINTS_ON_TIME} points!`);
             } else {
                  console.log(`  Not within time tolerance.`);
@@ -82,6 +83,15 @@ export default function Home() {
              console.log(`Task ${task.id} has no due date.`);
           } else if (isNowCompleting && task.points && task.points > 0) {
               console.log(`Task ${task.id} already has points.`);
+          }
+
+          // Show toast only if a bonus was just awarded
+          if (awardedBonus) {
+             toast({
+                title: "Well Done!",
+                description: `Task completed on time! +${BONUS_POINTS_ON_TIME} bonus point.`,
+                variant: "default", // Use default or specify another variant like 'success' if defined
+             });
           }
 
 
