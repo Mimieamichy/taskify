@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google'; // Use a standard Google Font
+import { Inter as FontSans } from 'next/font/google'; // Renamed import for clarity
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 import { cn } from "@/lib/utils"; // Import cn utility
+import { ThemeProvider } from "@/components/theme-provider"; // Import ThemeProvider
 
 // Initialize the Inter font
-const inter = Inter({
+const fontSans = FontSans({
   variable: '--font-sans', // Use a standard variable name like --font-sans
   subsets: ['latin'],
 });
@@ -21,13 +22,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(
-        "min-h-screen bg-background font-sans antialiased",
-        inter.variable // Apply the Inter font variable
-      )}>
-        {children}
-        <Toaster /> {/* Add Toaster component */}
+    <html lang="en" suppressHydrationWarning> {/* suppressHydrationWarning is recommended by next-themes */}
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable // Apply the Inter font variable
+        )}
+      >
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange // Optional: Recommended by next-themes to avoid style flashing
+        >
+          {children}
+          <Toaster /> {/* Add Toaster component */}
+        </ThemeProvider>
       </body>
     </html>
   );

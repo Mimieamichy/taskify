@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckSquare, Star, Info } from 'lucide-react'; // Import Info icon
 import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns functions
 import { useToast } from "@/hooks/use-toast"; // Import useToast
+import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
 
 const BONUS_POINTS_ON_TIME = 1;
 const ON_TIME_TOLERANCE_MINUTES = 15; // Allow 15 minutes buffer
@@ -119,7 +120,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 lg:p-24 bg-background">
       <Card className="w-full max-w-2xl shadow-xl rounded-lg overflow-hidden">
         <CardHeader className="bg-primary text-primary-foreground p-6 flex flex-row items-start sm:items-center justify-between">
-          <div className="flex flex-col"> {/* Wrap title and info in a column */}
+           <div className="flex flex-col flex-grow"> {/* Allow title/info to take space */}
             <div className="flex items-center space-x-3">
               <CheckSquare className="h-8 w-8" />
               <CardTitle className="text-2xl font-bold">TaskTango</CardTitle>
@@ -129,10 +130,13 @@ export default function Home() {
                 <span>Complete tasks on time for bonus points!</span>
             </div>
           </div>
-           <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
-              <Star className="h-5 w-5 text-yellow-300" />
-              <span className="font-semibold text-lg">{totalPoints}</span>
-              <span className="text-sm hidden sm:inline">Bonus Points</span>
+          <div className="flex items-center space-x-2 flex-shrink-0"> {/* Group points and theme toggle */}
+             <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
+                <Star className="h-5 w-5 text-yellow-300" />
+                <span className="font-semibold text-lg">{totalPoints}</span>
+                <span className="text-sm hidden sm:inline">Bonus Points</span>
+            </div>
+            <ThemeToggle /> {/* Add the ThemeToggle component */}
           </div>
         </CardHeader>
         <CardContent className="p-6">
