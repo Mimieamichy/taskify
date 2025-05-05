@@ -28,6 +28,7 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable // Apply the Inter font variable
         )}
+        suppressHydrationWarning={true} // Add suppression here as well
       >
         <ThemeProvider
           attribute="class"
