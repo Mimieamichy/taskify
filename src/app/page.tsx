@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,10 +7,22 @@ import useLocalStorage from "@/hooks/use-local-storage";
 import { AddTaskForm } from "@/components/add-task-form";
 import { TaskList } from "@/components/task-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Star, Info } from 'lucide-react'; // Import Info icon
+import { CheckSquare, Star, Info, Trash2, AlertTriangle } from 'lucide-react'; // Import icons
 import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns functions
 import { useToast } from "@/hooks/use-toast"; // Import useToast
 import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
+import { Button } from "@/components/ui/button"; // Import Button
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"; // Import AlertDialog components
 
 const BONUS_POINTS_ON_TIME = 1;
 const ON_TIME_TOLERANCE_MINUTES = 15; // Allow 15 minutes buffer
@@ -65,26 +78,29 @@ export default function Home() {
 
           // Award points only when marking as complete (not when un-marking)
           // and only if points haven't already been awarded for this task
-          if (isNowCompleting && task.dueDate && (task.points === 0 || task.points === undefined)) {
+          if (isNowCompleting && task.dueDate && !task.points) { // Check !task.points ensures points awarded only once
             // Calculate difference only if dueDate is valid
-            const diffMinutes = Math.abs(differenceInMinutes(now, task.dueDate));
+            const diffMinutes = differenceInMinutes(now, task.dueDate); // now - dueDate
             const sameDay = isSameDay(now, task.dueDate);
 
-            // Check if completion is on the same day and within the tolerance window *before* the due time
-            // or exactly at the due time, or within tolerance *after* the due time.
-            // Essentially, check if `now` is within [dueDate - tolerance, dueDate + tolerance]
-             // Also check if the task is being completed *before* or exactly at the due time + tolerance
+            // Check if completion is on the same day AND
+            // EITHER before the due date OR within the tolerance window *after* the due date.
+            // now <= dueDate + tolerance
              if (sameDay && now <= new Date(task.dueDate.getTime() + ON_TIME_TOLERANCE_MINUTES * 60000)) {
               pointsEarned += BONUS_POINTS_ON_TIME;
               awardedBonus = true; // Set flag
-               console.log(`  Awarding ${BONUS_POINTS_ON_TIME} points!`);
+               console.log(`Task ${task.id}: Awarding ${BONUS_POINTS_ON_TIME} points! Completed within tolerance.`);
             } else {
-                 console.log(`  Not within time tolerance or completed late.`);
+                 console.log(`Task ${task.id}: Not completed within time tolerance.`);
             }
           } else if(isNowCompleting && !task.dueDate) {
-             console.log(`Task ${task.id} has no due date.`);
+             console.log(`Task ${task.id} has no due date, cannot award points.`);
           } else if (isNowCompleting && task.points && task.points > 0) {
               console.log(`Task ${task.id} already has points.`);
+          } else if (!isNowCompleting) {
+              // Optional: Decide if un-completing should remove points. Currently, it doesn't.
+              // pointsEarned = 0; // Uncomment to remove points on un-completion
+               console.log(`Task ${task.id}: Marked as incomplete.`);
           }
 
           // Show toast only if a bonus was just awarded
@@ -95,7 +111,6 @@ export default function Home() {
                 variant: "default", // Use default or specify another variant like 'success' if defined
              });
           }
-
 
           return { ...task, completed: !task.completed, points: pointsEarned };
         }
@@ -108,6 +123,16 @@ export default function Home() {
   const deleteTask = (id: string) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
   };
+
+  const clearAllTasks = () => {
+    setTasks([]);
+    toast({
+        title: "Tasks Cleared",
+        description: "All tasks have been removed.",
+        variant: "default",
+    });
+  };
+
 
   // Filter tasks into incomplete and completed
   const incompleteTasks = isClient ? tasks.filter(task => !task.completed) : [];
@@ -141,6 +166,42 @@ export default function Home() {
         </CardHeader>
         <CardContent className="p-6">
           <AddTaskForm onAddTask={addTask} />
+
+          {/* Clear All Button with Confirmation */}
+          {isClient && tasks.length > 0 && (
+             <div className="flex justify-end mb-4 -mt-2">
+               <AlertDialog>
+                 <AlertDialogTrigger asChild>
+                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/50">
+                     <Trash2 className="h-4 w-4 mr-1" />
+                     Clear All Tasks
+                   </Button>
+                 </AlertDialogTrigger>
+                 <AlertDialogContent>
+                   <AlertDialogHeader>
+                     <AlertDialogTitle className="flex items-center">
+                       <AlertTriangle className="h-5 w-5 mr-2 text-destructive" /> Are you absolutely sure?
+                     </AlertDialogTitle>
+                     <AlertDialogDescription>
+                       This action cannot be undone. This will permanently delete all your tasks ({tasks.length} total).
+                     </AlertDialogDescription>
+                   </AlertDialogHeader>
+                   <AlertDialogFooter>
+                     <AlertDialogCancel>Cancel</AlertDialogCancel>
+                     <AlertDialogAction
+                        onClick={clearAllTasks}
+                        className={
+                          'bg-destructive text-destructive-foreground hover:bg-destructive/90'
+                        }
+                      >
+                       Yes, clear all tasks
+                     </AlertDialogAction>
+                   </AlertDialogFooter>
+                 </AlertDialogContent>
+               </AlertDialog>
+             </div>
+          )}
+
 
           <div className="space-y-6">
             {/* Incomplete Tasks Section */}
