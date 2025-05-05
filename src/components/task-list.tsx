@@ -11,27 +11,23 @@ interface TaskListProps {
 }
 
 export function TaskList({ tasks, onToggleComplete, onDelete }: TaskListProps) {
-  if (tasks.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground py-10">
-        <p>Your task list is empty. Add a task above to get started!</p>
-      </div>
-    );
-  }
+  // The empty state message is now handled in page.tsx
+  // if (tasks.length === 0) {
+  //   return null; // Or potentially a different placeholder if needed within the list context
+  // }
 
   return (
-    <Card className="shadow-lg">
-       <CardContent className="p-0">
-          <div className="space-y-px"> {/* Use space-y-px for thin separators */}
-              {tasks.map((task, index) => (
-              <div key={task.id}>
-                  <TaskItem
-                    task={task}
-                    onToggleComplete={onToggleComplete}
-                    onDelete={onDelete}
-                  />
-                  {index < tasks.length - 1 && <hr className="border-border" />} {/* Separator line */}
-              </div>
+    <Card className="shadow-sm border border-border"> {/* Use subtle border and shadow */}
+       <CardContent className="p-0"> {/* Remove padding from CardContent */}
+          <div className="space-y-px bg-border"> {/* Use border color for separators */}
+              {tasks.map((task) => (
+                <div key={task.id} className="bg-card"> {/* Ensure items have card background */}
+                    <TaskItem
+                      task={task}
+                      onToggleComplete={onToggleComplete}
+                      onDelete={onDelete}
+                    />
+                </div>
               ))}
           </div>
        </CardContent>
