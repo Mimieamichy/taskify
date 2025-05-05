@@ -12,6 +12,7 @@ import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns fu
 import { useToast } from "@/hooks/use-toast"; // Import useToast
 import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
 import { Button } from "@/components/ui/button"; // Import Button
+import { Skeleton } from "@/components/ui/skeleton"; // Import Skeleton for loading state
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,11 +30,12 @@ const ON_TIME_TOLERANCE_MINUTES = 15; // Allow 15 minutes buffer
 
 export default function Home() {
   const [tasks, setTasks] = useLocalStorage<Task[]>("tasks", []);
-  // Hydration safety: Ensure tasks are only rendered client-side after loading from localStorage
+  // Hydration safety: Ensure components depending on localStorage are only rendered client-side
   const [isClient, setIsClient] = useState(false);
   const { toast } = useToast(); // Get toast function
 
   useEffect(() => {
+    // This effect runs only on the client, after the initial render
     setIsClient(true);
   }, []);
 
@@ -133,12 +135,11 @@ export default function Home() {
     });
   };
 
-
-  // Filter tasks into incomplete and completed
+  // Filter tasks into incomplete and completed *only* on the client
   const incompleteTasks = isClient ? tasks.filter(task => !task.completed) : [];
   const completedTasks = isClient ? tasks.filter(task => task.completed) : [];
 
-  // Calculate total points
+  // Calculate total points *only* on the client
   const totalPoints = isClient ? tasks.reduce((sum, task) => sum + (task.points || 0), 0) : 0;
 
   return (
@@ -156,11 +157,15 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center space-x-2 flex-shrink-0"> {/* Group points and theme toggle */}
-             <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
-                <Star className="h-5 w-5 text-warning" /> {/* Updated color */}
-                <span className="font-semibold text-lg">{totalPoints}</span>
-                <span className="text-sm hidden sm:inline">Bonus Points</span>
-            </div>
+             {isClient ? (
+                <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
+                    <Star className="h-5 w-5 text-warning" /> {/* Updated color */}
+                    <span className="font-semibold text-lg">{totalPoints}</span>
+                    <span className="text-sm hidden sm:inline">Bonus Points</span>
+                </div>
+             ) : (
+                <Skeleton className="h-8 w-24 rounded-full mt-1 sm:mt-0" /> // Skeleton for points
+             )}
             <ThemeToggle /> {/* Add the ThemeToggle component */}
           </div>
         </CardHeader>
@@ -168,45 +173,56 @@ export default function Home() {
           <AddTaskForm onAddTask={addTask} />
 
           <div className="space-y-6">
-            {/* Incomplete Tasks Section */}
-            {incompleteTasks.length > 0 && (
-              <div>
-                <h2 className="text-lg font-semibold mb-3 text-foreground">To Do</h2>
-                <TaskList
-                  tasks={incompleteTasks}
-                  onToggleComplete={toggleComplete}
-                  onDelete={deleteTask}
-                />
-              </div>
-            )}
-
-             {/* Separator only if both lists have items */}
-             {incompleteTasks.length > 0 && completedTasks.length > 0 && (
-                <hr className="border-border my-6" />
-             )}
-
-            {/* Completed Tasks Section */}
-            {completedTasks.length > 0 && (
-              <div>
-                <h2 className="text-lg font-semibold mb-3 text-muted-foreground">Completed</h2>
-                <TaskList
-                  tasks={completedTasks}
-                  onToggleComplete={toggleComplete}
-                  onDelete={deleteTask}
-                />
-              </div>
-            )}
-
-            {/* Show message only if both lists are empty and client has loaded */}
-             {isClient && tasks.length === 0 && (
-                 <div className="text-center text-muted-foreground py-10">
-                    <p>Your task list is empty. Add a task above to get started!</p>
+            {/* Render Loading Skeletons or Task Lists */}
+            {!isClient ? (
+                <div className="space-y-3">
+                    <h2 className="text-lg font-semibold mb-3 text-foreground">To Do</h2>
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                    <Skeleton className="h-16 w-full rounded-lg" />
                 </div>
-             )}
+            ) : (
+                <>
+                    {/* Incomplete Tasks Section */}
+                    {incompleteTasks.length > 0 && (
+                    <div>
+                        <h2 className="text-lg font-semibold mb-3 text-foreground">To Do</h2>
+                        <TaskList
+                        tasks={incompleteTasks}
+                        onToggleComplete={toggleComplete}
+                        onDelete={deleteTask}
+                        />
+                    </div>
+                    )}
+
+                    {/* Separator only if both lists have items */}
+                    {incompleteTasks.length > 0 && completedTasks.length > 0 && (
+                        <hr className="border-border my-6" />
+                    )}
+
+                    {/* Completed Tasks Section */}
+                    {completedTasks.length > 0 && (
+                    <div>
+                        <h2 className="text-lg font-semibold mb-3 text-muted-foreground">Completed</h2>
+                        <TaskList
+                        tasks={completedTasks}
+                        onToggleComplete={toggleComplete}
+                        onDelete={deleteTask}
+                        />
+                    </div>
+                    )}
+
+                    {/* Show message only if both lists are empty and client has loaded */}
+                    {tasks.length === 0 && (
+                        <div className="text-center text-muted-foreground py-10">
+                            <p>Your task list is empty. Add a task above to get started!</p>
+                        </div>
+                    )}
+                </>
+            )}
           </div>
         </CardContent>
 
-        {/* Clear Completed Button with Confirmation */}
+        {/* Clear Completed Button with Confirmation - Render only on client and if needed */}
         {isClient && completedTasks.length > 0 && (
            <CardFooter className="p-6 border-t border-border justify-end"> {/* Moved button to CardFooter */}
              <AlertDialog>
