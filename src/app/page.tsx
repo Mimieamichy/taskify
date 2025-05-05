@@ -6,7 +6,7 @@ import useLocalStorage from "@/hooks/use-local-storage";
 import { AddTaskForm } from "@/components/add-task-form";
 import { TaskList } from "@/components/task-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Star } from 'lucide-react';
+import { CheckSquare, Star, Info } from 'lucide-react'; // Import Info icon
 import { differenceInMinutes, isSameDay } from 'date-fns'; // Import date-fns functions
 import { useToast } from "@/hooks/use-toast"; // Import useToast
 
@@ -72,12 +72,13 @@ export default function Home() {
             // Check if completion is on the same day and within the tolerance window *before* the due time
             // or exactly at the due time, or within tolerance *after* the due time.
             // Essentially, check if `now` is within [dueDate - tolerance, dueDate + tolerance]
-            if (sameDay && diffMinutes <= ON_TIME_TOLERANCE_MINUTES) {
+             // Also check if the task is being completed *before* or exactly at the due time + tolerance
+             if (sameDay && now <= new Date(task.dueDate.getTime() + ON_TIME_TOLERANCE_MINUTES * 60000)) {
               pointsEarned += BONUS_POINTS_ON_TIME;
               awardedBonus = true; // Set flag
                console.log(`  Awarding ${BONUS_POINTS_ON_TIME} points!`);
             } else {
-                 console.log(`  Not within time tolerance.`);
+                 console.log(`  Not within time tolerance or completed late.`);
             }
           } else if(isNowCompleting && !task.dueDate) {
              console.log(`Task ${task.id} has no due date.`);
@@ -117,12 +118,18 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 lg:p-24 bg-background">
       <Card className="w-full max-w-2xl shadow-xl rounded-lg overflow-hidden">
-        <CardHeader className="bg-primary text-primary-foreground p-6 flex flex-row items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <CheckSquare className="h-8 w-8" />
-            <CardTitle className="text-2xl font-bold">TaskTango</CardTitle>
+        <CardHeader className="bg-primary text-primary-foreground p-6 flex flex-row items-start sm:items-center justify-between">
+          <div className="flex flex-col"> {/* Wrap title and info in a column */}
+            <div className="flex items-center space-x-3">
+              <CheckSquare className="h-8 w-8" />
+              <CardTitle className="text-2xl font-bold">TaskTango</CardTitle>
+            </div>
+             <div className="flex items-center space-x-1 mt-1.5 text-xs text-primary-foreground/80 ml-11"> {/* Info message */}
+                <Info className="h-3 w-3" />
+                <span>Complete tasks on time for bonus points!</span>
+            </div>
           </div>
-           <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full">
+           <div className="flex items-center space-x-2 bg-primary/80 px-3 py-1 rounded-full flex-shrink-0 mt-1 sm:mt-0"> {/* Points display */}
               <Star className="h-5 w-5 text-yellow-300" />
               <span className="font-semibold text-lg">{totalPoints}</span>
               <span className="text-sm hidden sm:inline">Bonus Points</span>
