@@ -257,6 +257,10 @@ export default function Home() {
            </CardFooter>
         )}
       </Card>
+      <footer className="mt-8 text-sm text-muted-foreground">
+        <p>Made with ❤️ by Mae Techs</p>
+        <p>© {new Date().getFullYear()} Taskify</p>
+      </footer>
     </main>
   );
 }
